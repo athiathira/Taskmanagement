@@ -1,0 +1,97 @@
+﻿
+
+@model IEnumerable<TaskManagement.Models.Task>
+
+@{
+    ViewData["Title"] = "Task List";
+}
+
+<h1>Task List</h1>
+
+<p>
+    <a asp-action="Create" asp-controller="Task" class="btn btn-primary">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Title)</th>
+            <th>@Html.DisplayNameFor(model => model.Description)</th>
+            <th>@Html.DisplayNameFor(model => model.IsCompleted)</th>
+            <th>@Html.DisplayNameFor(model => model.Priority)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+       @*   @foreach (var item in Model)
+        {
+            <tr class="@(item.IsCompleted ? "table-success" : "table-warning")">
+                <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                <td>
+                    <input type="checkbox" disabled="disabled" @(item.IsCompleted ? "checked" : "") />
+                </td>
+                <td>@Html.DisplayFor(modelItem => item.Priority)</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+        }  *@
+        @if (Model != null)
+        {
+            @foreach (var item in Model)
+            {
+                <tr class="@(item.IsCompleted ? "table-success" : "table-warning")">
+                    <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                    <td>
+                        <input type="checkbox" disabled="disabled" @(item.IsCompleted ? "checked" : "") />
+                    </td>
+                    <td>@Html.DisplayFor(modelItem => item.Priority)</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <p>No tasks available.</p>
+        }
+    </tbody>
+</table>
+<link href="~/css/site.css" rel="stylesheet" />
+<script src="~/js/site.js"></script>
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script>
+    <script>
+        $(function () {
+            $("#task-list").sortable({
+                axis: "y", // Allow vertical dragging only
+                update: function (event, ui) {
+                    var taskIds = [];
+                    $(".task-item").each(function () {
+                        taskIds.push($(this).data("task-id"));
+                    });
+
+                    // Send AJAX request to update task priority
+                    $.ajax({
+                        url: "/Task/UpdateTaskPriority",
+                        type: "POST",
+                        data: { taskIds: taskIds },
+                        success: function (data) {
+                            console.log("Task priority updated successfully.");
+                        },
+                        error: function () {
+                            console.error("Error updating task priority.");
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+    }
